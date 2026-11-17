@@ -4,6 +4,7 @@ import './tasks.js';
 import './notes.js';
 import './schedule.js';
 import './settings.js';
+import './sync.js';
 
 document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
 $('#settings-btn').addEventListener('click', () => showView('settings'));
