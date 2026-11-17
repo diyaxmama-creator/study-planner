@@ -13,6 +13,8 @@ document.querySelectorAll('.nav button').forEach(b => {
   b.prepend(icon(NAV_ICONS[b.dataset.view], '#4A3A3F', 3));
   b.addEventListener('click', () => showView(b.dataset.view));
 });
+$('#settings-btn').append(icon('gear', '#4A3A3F', 3));
+$('#refresh-btn').prepend(icon('sync', '#4A3A3F', 2));
 $('#settings-btn').addEventListener('click', () => showView('settings'));
 $('#fab').addEventListener('click', () => views[state.view]?.add?.());
 $('#sheet').addEventListener('click', e => { // only a tap on the dimmed backdrop closes, not on the sheet's edge

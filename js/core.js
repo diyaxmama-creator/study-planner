@@ -74,7 +74,7 @@ export function renderHeader() {
   const mood = state.loadFailed ? 'waving' : state.view === 'notes' && !state.notes.length && !state.justCompleted && !state.syncing
     ? 'notes'
     : pickMood({ groups, now, justCompleted: state.justCompleted, syncing: state.syncing, firstOpenToday: state.firstOpenToday });
-  renderMascot($('#hero'), mood, state.images,
+  renderMascot($('#app'), mood, state.images,
     now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'short' }), refreshImages);
   const pill = $('#overdue-pill');
   pill.hidden = !groups.overdue.length;

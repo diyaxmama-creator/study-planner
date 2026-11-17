@@ -30,17 +30,18 @@ async function upload(mood, input) {
 
 function renderSettings() {
   $('#view-settings').replaceChildren(
-    el('h2', { className: 'group-title' }, 'รูปตัวละครตามอารมณ์'),
-    el('p', { className: 'muted' }, 'รูปเก็บแบบส่วนตัว เห็นเฉพาะบัญชีนี้ ใช้ได้ทั้งรูปนิ่ง GIF และ MP4 (ไม่เกิน 15MB) ถ้ายังไม่มีรูปของอารมณ์ไหน แอปจะใช้รูปใกล้เคียงแทน'),
-    ...MOODS.map(m => el('div', { className: 'card mood-row' },
+    el('div', { className: 'intro' },
+      el('h2', { className: 'group-title' }, 'รูปตัวละครตามอารมณ์'),
+      el('p', { className: 'muted' }, 'รูปเก็บแบบส่วนตัว เห็นเฉพาะบัญชีนี้ ใช้ได้ทั้งรูปนิ่ง GIF และ MP4 (ไม่เกิน 15MB) ถ้ายังไม่มีรูปของอารมณ์ไหน แอปจะใช้รูปใกล้เคียงแทน')),
+    el('div', { className: 'panel' }, MOODS.map(m => el('div', { className: 'card mood-row' },
       thumb(state.images[m]),
       el('div', { className: 'body' },
         el('b', {}, LABELS[m][0]),
         el('div', { className: 'muted' }, LABELS[m][1])),
       el('label', { className: 'chip file-btn' }, state.images[m] ? 'เปลี่ยน' : 'อัปโหลด',
         el('input', { type: 'file', accept: 'image/*,video/mp4', 'aria-label': 'อัปโหลดรูป ' + LABELS[m][0],
-          onchange: e => upload(m, e.target) })))),
-    el('div', { className: 'actions' },
+          onchange: e => upload(m, e.target) }))))),
+    el('div', { className: 'settings-actions' },
       el('button', { type: 'button', className: 'btn', onclick: () => attempt(async () => { await store.signOut(); location.reload(); }) }, 'ออกจากระบบ')));
 }
 

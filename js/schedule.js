@@ -9,16 +9,16 @@ function renderSchedule() {
   const days = order.map(d => {
     const list = state.classes.filter(c => c.weekday === d).sort((a, b) => hm(a.start_time).localeCompare(hm(b.start_time)));
     if (!list.length && d !== today) return null;
-    return el('div', { className: 'day' + (d === today ? ' today' : '') },
+    return el('section', { className: 'day group' + (d === today ? ' today' : '') },
       el('h2', { className: 'group-title' }, (d === today ? 'วันนี้ · ' : '') + 'วัน' + DAYS[d]),
-      list.length ? list.map(c => el('div', { className: 'card' },
+      el('div', { className: 'panel' }, list.length ? list.map(c => el('div', { className: 'card' },
         el('div', { className: 'body' },
           el('button', { className: 'title', type: 'button', onclick: () => editClass(c) }, c.course),
           el('div', { className: 'meta' }, el('span', { className: 'num' }, `${hm(c.start_time)}–${hm(c.end_time)}`), c.room && el('span', {}, c.room)))))
-        : el('p', { className: 'muted' }, 'วันนี้ไม่มีเรียน'));
+        : el('p', { className: 'muted' }, 'วันนี้ไม่มีเรียน')));
   });
   $('#view-schedule').replaceChildren(...days.filter(Boolean),
-    !state.classes.length ? el('p', { className: 'empty' }, 'ยังไม่มีตารางเรียน กด ＋ เพื่อเพิ่มวิชา') : null);
+    !state.classes.length ? el('p', { className: 'empty' }, 'ยังไม่มีตารางเรียน', el('span', { className: 'muted' }, 'กด ＋ เพื่อเพิ่มวิชา')) : null);
 }
 
 function editClass(c = null) {

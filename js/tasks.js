@@ -35,14 +35,15 @@ function taskCard(task, group) {
 
 function renderTasks() {
   const groups = groupTasks(state.tasks, new Date());
-  const sections = GROUPS.filter(([k]) => groups[k].length).map(([k, label]) => el('div', {},
-    el('h2', { className: 'group-title' + (k === 'overdue' ? ' late' : '') }, icon('star', k === 'overdue' ? '#B4455A' : '#F2A7B8'), label),
-    groups[k].map(t => taskCard(t, k))));
+  const sections = GROUPS.filter(([k]) => groups[k].length).map(([k, label]) => el('section', { className: 'group' },
+    el('h2', { className: 'group-title' + (k === 'overdue' ? ' late' : '') },
+      icon('star', k === 'overdue' ? '#B4455A' : '#F2A7B8'), label, el('span', { className: 'count' }, String(groups[k].length))),
+    el('div', { className: 'panel' }, groups[k].map(t => taskCard(t, k)))));
   $('#view-tasks').replaceChildren(
-    ...(sections.length ? sections : [el('p', { className: 'empty' }, 'ไม่มีงานค้าง เย้! กด ＋ เพื่อจดงานใหม่')]),
-    groups.done.length ? el('details', { className: 'done-group' },
-      el('summary', { className: 'group-title' }, `เสร็จแล้ว (${groups.done.length})`),
-      groups.done.map(t => taskCard(t, 'done'))) : null,
+    ...(sections.length ? sections : [el('p', { className: 'empty' }, 'ไม่มีงานค้าง เย้!', el('span', { className: 'muted' }, 'กด ＋ เพื่อจดงานใหม่'))]),
+    groups.done.length ? el('details', { className: 'done-group group' },
+      el('summary', { className: 'group-title' }, icon('check', '#6B5960'), 'เสร็จแล้ว', el('span', { className: 'count' }, String(groups.done.length))),
+      el('div', { className: 'panel' }, groups.done.map(t => taskCard(t, 'done')))) : null,
   );
 }
 

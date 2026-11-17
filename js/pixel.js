@@ -5,6 +5,8 @@ export const ICONS = {
   check: ['......X', '.....X.', 'X...X..', '.X.X...', '..X....'],
   list: ['XXXXXXX', '.......', 'XXXXXXX', '.......', 'XXXXXXX'],
   cal: ['XXXXXXX', 'X.X.X.X', 'XXXXXXX', 'X.X.X.X', 'XXXXXXX'],
+  gear: ['.X.X.X.', 'XXXXXXX', '.XX.XX.', 'XX...XX', '.XX.XX.', 'XXXXXXX', '.X.X.X.'],
+  sync: ['..XXX.X', '.X...XX', 'X...XXX', 'X......', '......X', 'XXX...X', 'XX...X.', 'X.XXX..'],
   note: ['XXXXX.', 'X...XX', 'X.XX.X', 'X....X', 'X.XX.X', 'XXXXXX'],
 };
 
