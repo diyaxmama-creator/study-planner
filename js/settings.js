@@ -1,0 +1,46 @@
+import { MOODS } from './logic.js';
+import { $, el, state, store, attempt, render, views, toast } from './core.js';
+
+const LABELS = {
+  fighting: ['สู้ ๆ', 'มีงานเลยกำหนด'], waving: ['โบกมือ', 'มีงานค้าง ยังไม่เลยกำหนด'], allclear: ['เคลียร์หมด', 'ไม่มีงานค้าง'],
+  studying: ['ตั้งใจทำงาน', 'มีงานส่งวันนี้'], cheering: ['ดีใจ', 'ตอนติ๊กงานเสร็จ'], sleepy: ['ง่วง', 'เปิดแอปหลัง 4 ทุ่ม'],
+  morning: ['ตอนเช้า', 'เปิดแอปครั้งแรกของวัน'], books: ['งานเยอะ', 'งานค้าง 5 งานขึ้นไป'],
+  sync: ['กำลังดึงงาน', 'ตอนกดรีเฟรช'], notes: ['โน้ตว่าง', 'ยังไม่มีโน้ต'],
+};
+
+function thumb(img) {
+  if (!img) return el('div', { className: 'noimg' }, 'ยังไม่มีรูป');
+  return img.type === 'video/mp4'
+    ? el('video', { className: 'thumb', src: img.url, muted: true, playsInline: true })
+    : el('img', { className: 'thumb', src: img.url, alt: '' });
+}
+
+async function upload(mood, input) {
+  const file = input.files[0];
+  input.value = '';
+  if (!file) return;
+  await attempt(async () => {
+    await store.uploadMoodImage(mood, file);
+    state.images = await store.moodImages();
+    toast('อัปโหลดรูปแล้ว');
+    render();
+  });
+}
+
+function renderSettings() {
+  $('#view-settings').replaceChildren(
+    el('h2', { className: 'group-title' }, 'รูปตัวละครตามอารมณ์'),
+    el('p', { className: 'muted' }, 'รูปเก็บแบบส่วนตัว เห็นเฉพาะบัญชีนี้ ใช้ได้ทั้งรูปนิ่ง GIF และ MP4 (ไม่เกิน 15MB) ถ้ายังไม่มีรูปของอารมณ์ไหน แอปจะใช้รูปใกล้เคียงแทน'),
+    ...MOODS.map(m => el('div', { className: 'card mood-row' },
+      thumb(state.images[m]),
+      el('div', { className: 'body' },
+        el('b', {}, LABELS[m][0]),
+        el('div', { className: 'muted' }, LABELS[m][1])),
+      el('label', { className: 'chip file-btn' }, state.images[m] ? 'เปลี่ยน' : 'อัปโหลด',
+        el('input', { type: 'file', accept: 'image/*,video/mp4', 'aria-label': 'อัปโหลดรูป ' + LABELS[m][0],
+          onchange: e => upload(m, e.target) })))),
+    el('div', { className: 'actions' },
+      el('button', { type: 'button', className: 'btn', onclick: () => attempt(async () => { await store.signOut(); location.reload(); }) }, 'ออกจากระบบ')));
+}
+
+views.settings = { render: renderSettings };
