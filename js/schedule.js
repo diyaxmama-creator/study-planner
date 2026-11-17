@@ -14,7 +14,7 @@ function renderSchedule() {
       list.length ? list.map(c => el('div', { className: 'card' },
         el('div', { className: 'body' },
           el('button', { className: 'title', type: 'button', onclick: () => editClass(c) }, c.course),
-          el('div', { className: 'meta' }, el('span', {}, `${hm(c.start_time)}–${hm(c.end_time)}`), c.room && el('span', {}, c.room)))))
+          el('div', { className: 'meta' }, el('span', { className: 'num' }, `${hm(c.start_time)}–${hm(c.end_time)}`), c.room && el('span', {}, c.room)))))
         : el('p', { className: 'muted' }, 'วันนี้ไม่มีเรียน'));
   });
   $('#view-schedule').replaceChildren(...days.filter(Boolean),

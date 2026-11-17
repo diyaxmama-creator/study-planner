@@ -1,6 +1,7 @@
 // Shared app state and helpers. Views import this; this imports no view (no cycles).
 import { groupTasks, pickMood } from './logic.js';
 import { renderMascot } from './mascot.js';
+import { icon } from './pixel.js';
 import { SUPABASE_URL } from './config.js';
 
 const demoParam = new URLSearchParams(location.search).get('demo');
@@ -77,7 +78,7 @@ export function renderHeader() {
     now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'short' }), refreshImages);
   const pill = $('#overdue-pill');
   pill.hidden = !groups.overdue.length;
-  pill.textContent = `เลยกำหนด ${groups.overdue.length} งาน`;
+  pill.replaceChildren(icon('heart', '#B4455A'), 'เลยกำหนด ', el('span', { className: 'count' }, String(groups.overdue.length)), ' งาน');
 }
 
 export function render() {

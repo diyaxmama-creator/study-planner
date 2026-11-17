@@ -1,4 +1,5 @@
 import { groupTasks, isDone } from './logic.js';
+import { icon } from './pixel.js';
 import { $, el, state, store, attempt, render, views, hooks, openSheet, closeSheet, field, courseInput, pad, localDate, celebrate } from './core.js';
 
 const GROUPS = [['overdue', 'เลยกำหนด'], ['today', 'วันนี้'], ['tomorrow', 'พรุ่งนี้'], ['week', 'สัปดาห์นี้'], ['later', 'ภายหลัง'], ['undated', 'ยังไม่ระบุวันส่ง']];
@@ -18,12 +19,12 @@ function taskCard(task, group) {
       'aria-label': (done ? 'ยกเลิกเสร็จ: ' : 'ทำเสร็จแล้ว: ') + task.title,
       title: byClassroom ? 'ส่งใน Classroom แล้ว' : null,
       onclick: () => toggleDone(task),
-    }, done ? '✓' : ''),
+    }, done ? icon('check', '#4A3A3F') : ''),
     el('div', { className: 'body' },
       el('button', { className: 'title', type: 'button', onclick: () => openTaskSheet(task) }, task.title),
       el('div', { className: 'meta' },
         task.course && el('span', {}, task.course),
-        task.due_at && el('span', {}, fmtDue(task.due_at, group)),
+        task.due_at && el('span', { className: 'num' }, fmtDue(task.due_at, group)),
         task.source === 'classroom' && (task.classroom_link
           ? el('a', { className: 'tag', href: task.classroom_link, target: '_blank', rel: 'noopener' }, 'Classroom')
           : el('span', { className: 'tag' }, 'Classroom')),
@@ -35,7 +36,7 @@ function taskCard(task, group) {
 function renderTasks() {
   const groups = groupTasks(state.tasks, new Date());
   const sections = GROUPS.filter(([k]) => groups[k].length).map(([k, label]) => el('div', {},
-    el('h2', { className: 'group-title' + (k === 'overdue' ? ' late' : '') }, label),
+    el('h2', { className: 'group-title' + (k === 'overdue' ? ' late' : '') }, icon('star', k === 'overdue' ? '#B4455A' : '#F2A7B8'), label),
     groups[k].map(t => taskCard(t, k))));
   $('#view-tasks').replaceChildren(
     ...(sections.length ? sections : [el('p', { className: 'empty' }, 'ไม่มีงานค้าง เย้! กด ＋ เพื่อจดงานใหม่')]),
