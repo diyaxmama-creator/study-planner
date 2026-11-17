@@ -46,7 +46,7 @@ main { padding: 0 var(--s4) 136px; }
 .hero-tools { display: flex; gap: var(--s3); }
 
 .hero { margin: 0 var(--s4); background: var(--soft); box-shadow: var(--px2), var(--drop); display: flex; height: 152px; overflow: hidden; }
-.hello { flex: 1; min-width: 0; padding: var(--s4); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: var(--s3); }
+.hello { flex: 1; min-width: 0; padding: var(--s4) calc(var(--s4) + 36px) var(--s4) var(--s4); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: var(--s3); }
 .hero-text { font-size: 22px; line-height: 1.35; }
 .pill { display: inline-flex; align-items: center; gap: var(--s2); background: var(--card); padding: 2px var(--s2); font-size: 13px; font-weight: 600; color: var(--late);
   box-shadow: 0 -2px 0 var(--late), 0 2px 0 var(--late), -2px 0 0 var(--late), 2px 0 0 var(--late); }
@@ -160,3 +160,9 @@ dialog#sheet fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .file-btn { position: relative; overflow: hidden; }
 .file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .settings-actions { margin-top: var(--s5); display: flex; justify-content: center; }
+
+/* ---------- the cat: decoration only (never a mood) ---------- */
+/* sits on the hero's floor, next to her picture; never covers content */
+.hero { position: relative; }
+.deco-cat { position: absolute; right: 108px; bottom: 0; width: 52px; height: auto; mix-blend-mode: multiply; pointer-events: none; }
+.login-cat { width: 120px; height: 150px; object-fit: cover; object-position: top; mix-blend-mode: multiply; justify-self: center; }

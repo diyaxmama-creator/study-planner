@@ -26,7 +26,7 @@ test('pickMood priority', () => {
   const g = groupTasks([t('late','2026-11-16T12:00:00Z')], now);
   assert.equal(pickMood({groups:g, now, justCompleted:true}), 'cheering');
   assert.equal(pickMood({groups:g, now, syncing:true}), 'sync');
-  assert.equal(pickMood({groups:g, now}), 'fighting');
+  assert.equal(pickMood({groups:g, now}), 'angry'); // overdue: she is cross with you
   const empty = groupTasks([], now);
   assert.equal(pickMood({groups:empty, now: new Date('2026-11-17T23:00:00+07:00')}), 'sleepy');
   assert.equal(pickMood({groups:empty, now: new Date('2026-11-17T08:00:00+07:00'), firstOpenToday:true}), 'allclear'); // nothing open beats the greeting
@@ -45,7 +45,12 @@ test('pickMood books, studying, morning, waving', () => {
 
 test('moodImageFor falls back and never breaks', () => {
   assert.deepEqual(moodImageFor('books', {waving:{url:'w',type:'image/webp'}}), {mood:'waving', url:'w', type:'image/webp'});
-  assert.equal(moodImageFor('fighting', {}), null);
+  assert.equal(moodImageFor('angry', {}), null);
+  // no angry picture yet -> the fist-pump picture stands in
+  assert.equal(moodImageFor('angry', { fighting: { url: 'f', type: 'image/webp' } }).mood, 'fighting');
+  // all done -> her happy picture, never the cat
+  assert.equal(moodImageFor('allclear', { cheering: { url: 'c', type: 'image/webp' } }).mood, 'cheering');
+  for (const m of ['sync', 'notes']) assert.equal(moodImageFor(m, { waving: { url: 'w', type: 'image/webp' } }).mood, 'waving', m);
 });
 
 test('checkMoodFile accepts images and mp4 up to 15MB only', () => {
@@ -63,7 +68,8 @@ test('clickIsOutside: taps on the sheet padding stay inside', () => {
 });
 
 test('every mood has Thai copy', () => {
-  assert.equal(MOODS.length, 10);
+  assert.equal(MOODS.length, 11);
+  assert.ok(MOODS.includes('angry'));
   for (const m of MOODS) assert.ok(MOOD_TEXT[m], m);
-  assert.equal(MOOD_TEXT.fighting, 'สู้ ๆ นะ!');
+  assert.equal(MOOD_TEXT.angry, 'ฮึ่ม! งานค้างอยู่นะ');
 });

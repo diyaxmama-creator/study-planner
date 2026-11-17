@@ -33,9 +33,10 @@ export function groupTasks(tasks, now) {
   return g;
 }
 
-export const MOODS = ['fighting', 'waving', 'allclear', 'studying', 'cheering', 'sleepy', 'morning', 'books', 'sync', 'notes'];
+export const MOODS = ['angry', 'fighting', 'waving', 'allclear', 'studying', 'cheering', 'sleepy', 'morning', 'books', 'sync', 'notes'];
 
 export const MOOD_TEXT = {
+  angry: 'ฮึ่ม! งานค้างอยู่นะ',
   fighting: 'สู้ ๆ นะ!',
   waving: 'วันนี้ก็ทำได้นะ',
   allclear: 'เก่งมาก ♡',
@@ -57,7 +58,7 @@ export function pickMood({ groups, now, justCompleted = false, syncing = false, 
   const hour = now.getHours(), open = openCount(groups);
   if (justCompleted) return 'cheering';
   if (syncing) return 'sync';
-  if (groups.overdue.length) return 'fighting';
+  if (groups.overdue.length) return 'angry';
   if (hour >= 22 || hour < 5) return 'sleepy';
   if (open >= 5) return 'books';
   if (groups.today.length) return 'studying';
@@ -66,8 +67,9 @@ export function pickMood({ groups, now, justCompleted = false, syncing = false, 
 }
 
 export const MOOD_FALLBACK = {
-  fighting: 'waving', studying: 'waving', books: 'fighting', sleepy: 'waving', morning: 'waving',
-  cheering: 'allclear', sync: 'allclear', notes: 'allclear', allclear: 'waving', waving: null,
+  // Her pictures only; the cat is decoration, never a mood.
+  angry: 'fighting', fighting: 'waving', studying: 'waving', books: 'fighting', sleepy: 'waving', morning: 'waving',
+  allclear: 'cheering', cheering: 'waving', sync: 'waving', notes: 'waving', waving: null,
 };
 
 // A click on a <dialog>'s padding has the dialog itself as target, so compare coordinates instead.
