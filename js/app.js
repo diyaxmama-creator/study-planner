@@ -1,6 +1,7 @@
 // Entry point: registers views, wires navigation, logs in, loads data.
 import { $, store, state, attempt, safeStorage, localDate, showView, views, closeSheet } from './core.js';
 import './tasks.js';
+import './notes.js';
 
 document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
 $('#settings-btn').addEventListener('click', () => showView('settings'));
