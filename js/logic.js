@@ -70,6 +70,11 @@ export const MOOD_FALLBACK = {
   cheering: 'allclear', sync: 'allclear', notes: 'allclear', allclear: 'waving', waving: null,
 };
 
+export function checkMoodFile(file) {
+  const okType = file.type.startsWith('image/') || file.type === 'video/mp4';
+  if (!okType || file.size > 15 * 1024 * 1024) throw new Error('ไฟล์ต้องเป็นรูปหรือ mp4 ไม่เกิน 15MB');
+}
+
 export function moodImageFor(mood, images) {
   const seen = new Set();
   for (let m = mood; m && !seen.has(m); m = MOOD_FALLBACK[m]) {

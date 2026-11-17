@@ -1,7 +1,7 @@
 process.env.TZ = 'Asia/Bangkok';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { classroomDue, groupTasks, pickMood, moodImageFor, MOOD_TEXT, MOODS } from '../js/logic.js';
+import { classroomDue, groupTasks, pickMood, moodImageFor, MOOD_TEXT, MOODS, checkMoodFile } from '../js/logic.js';
 
 test('classroomDue is UTC', () => {
   assert.equal(classroomDue({year:2026,month:11,day:17},{hours:16,minutes:59}).toISOString(), '2026-11-17T16:59:00.000Z');
@@ -46,6 +46,13 @@ test('pickMood books, studying, morning, waving', () => {
 test('moodImageFor falls back and never breaks', () => {
   assert.deepEqual(moodImageFor('books', {waving:{url:'w',type:'image/webp'}}), {mood:'waving', url:'w', type:'image/webp'});
   assert.equal(moodImageFor('fighting', {}), null);
+});
+
+test('checkMoodFile accepts images and mp4 up to 15MB only', () => {
+  assert.doesNotThrow(() => checkMoodFile({ type: 'image/webp', size: 1000 }));
+  assert.doesNotThrow(() => checkMoodFile({ type: 'video/mp4', size: 15 * 1024 * 1024 }));
+  assert.throws(() => checkMoodFile({ type: 'application/pdf', size: 10 }), /ไฟล์ต้องเป็นรูปหรือ mp4 ไม่เกิน 15MB/);
+  assert.throws(() => checkMoodFile({ type: 'image/png', size: 15 * 1024 * 1024 + 1 }), /15MB/);
 });
 
 test('every mood has Thai copy', () => {
