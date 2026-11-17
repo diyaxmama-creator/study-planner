@@ -1,5 +1,6 @@
 // Entry point: registers views, wires navigation, logs in, loads data.
 import { $, store, state, attempt, safeStorage, localDate, showView, views, closeSheet } from './core.js';
+import { clickIsOutside } from './logic.js';
 import './tasks.js';
 import './notes.js';
 import './schedule.js';
@@ -9,7 +10,9 @@ import './sync.js';
 document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
 $('#settings-btn').addEventListener('click', () => showView('settings'));
 $('#fab').addEventListener('click', () => views[state.view]?.add?.());
-$('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); }); // tap on backdrop closes
+$('#sheet').addEventListener('click', e => { // only a tap on the dimmed backdrop closes, not on the sheet's edge
+  if (e.target.id === 'sheet' && clickIsOutside(e.target.getBoundingClientRect(), e.clientX, e.clientY)) closeSheet();
+});
 
 export async function loadAll() {
   [state.tasks, state.notes, state.classes, state.images] = await Promise.all(
@@ -33,7 +36,7 @@ async function boot() {
   state.firstOpenToday = safeStorage.get('lastOpenDay') !== today;
   safeStorage.set('lastOpenDay', today);
   $('#app').hidden = false;
-  await attempt(loadAll);
+  try { await loadAll(); } catch { state.loadFailed = true; }
   showView('tasks');
 }
 

@@ -7,7 +7,7 @@ const DEMO_IMAGES = {
   morning: 'her-morning.webp', books: 'her-books.webp',
 };
 
-export function createStore() {
+export function createStore({ failLoad = false } = {}) {
   let seq = 0;
   const id = () => 'demo-' + ++seq;
   const at = (days, h = 23, m = 59) => { const d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, m, 0, 0); return d.toISOString(); };
@@ -47,7 +47,10 @@ export function createStore() {
     async getUser() { return { id: 'demo', email: 'demo' }; },
     async signIn() {},
     async signOut() {},
-    async listTasks() { return tasks.map(t => ({ ...t })); },
+    async listTasks() {
+      if (failLoad) throw new Error('โหลดข้อมูลไม่สำเร็จ (โหมดทดสอบ)');
+      return tasks.map(t => ({ ...t }));
+    },
     async addTask({ title, course = '', due_at = null, source = 'manual', note_id = null }) {
       if (!title?.trim()) throw new Error('ต้องใส่ชื่องาน');
       const t = task({ title: title.trim(), course, due_at, source, note_id });

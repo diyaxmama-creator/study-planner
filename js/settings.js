@@ -1,5 +1,5 @@
 import { MOODS } from './logic.js';
-import { $, el, state, store, attempt, render, views, toast } from './core.js';
+import { $, el, state, store, attempt, render, views, toast, refreshImages } from './core.js';
 
 const LABELS = {
   fighting: ['สู้ ๆ', 'มีงานเลยกำหนด'], waving: ['โบกมือ', 'มีงานค้าง ยังไม่เลยกำหนด'], allclear: ['เคลียร์หมด', 'ไม่มีงานค้าง'],
@@ -10,9 +10,10 @@ const LABELS = {
 
 function thumb(img) {
   if (!img) return el('div', { className: 'noimg' }, 'ยังไม่มีรูป');
+  const onerror = e => { e.target.replaceWith(el('div', { className: 'noimg' }, 'โหลดรูปไม่ได้')); refreshImages(); };
   return img.type === 'video/mp4'
-    ? el('video', { className: 'thumb', src: img.url, muted: true, playsInline: true })
-    : el('img', { className: 'thumb', src: img.url, alt: '' });
+    ? el('video', { className: 'thumb', src: img.url, muted: true, playsInline: true, onerror })
+    : el('img', { className: 'thumb', src: img.url, alt: '', onerror });
 }
 
 async function upload(mood, input) {

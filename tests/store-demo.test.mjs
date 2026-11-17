@@ -30,6 +30,10 @@ test('saveNote assigns an id and notes list newest date first', async () => {
   assert.equal((await s.listNotes())[0].id, n.id);
 });
 
+test('failLoad option makes loading fail (to exercise the error screen)', async () => {
+  await assert.rejects(createStore({ failLoad: true }).listTasks(), /โหลดข้อมูลไม่สำเร็จ/);
+});
+
 test('upsertClassroomTasks keeps manual done on re-sync', async () => {
   const s = createStore();
   const row = { user_id: 'demo', classroom_id: 'cw1', title: 'A', course: 'C', due_at: null, classroom_link: '', classroom_state: 'CREATED', source: 'classroom' };

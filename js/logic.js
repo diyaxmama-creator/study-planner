@@ -70,6 +70,11 @@ export const MOOD_FALLBACK = {
   cheering: 'allclear', sync: 'allclear', notes: 'allclear', allclear: 'waving', waving: null,
 };
 
+// A click on a <dialog>'s padding has the dialog itself as target, so compare coordinates instead.
+export function clickIsOutside(rect, x, y) {
+  return x < rect.left || x > rect.right || y < rect.top || y > rect.bottom;
+}
+
 export function checkMoodFile(file) {
   const okType = file.type.startsWith('image/') || file.type === 'video/mp4';
   if (!okType || file.size > 15 * 1024 * 1024) throw new Error('ไฟล์ต้องเป็นรูปหรือ mp4 ไม่เกิน 15MB');

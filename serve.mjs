@@ -8,10 +8,12 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
 const root = process.cwd();
 
 createServer(async (req, res) => {
-  const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^([/\\])+/, '');
+  let path;
+  try { path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^([/\\])+/, ''); }
+  catch { res.writeHead(400).end(); return; }
   if (path.startsWith('..')) { res.writeHead(403).end(); return; }
   try {
     const body = await readFile(join(root, path || 'index.html'));
     res.writeHead(200, { 'Content-Type': TYPES[extname(path || 'index.html')] || 'application/octet-stream', 'Cache-Control': 'no-store' }).end(body);
   } catch { res.writeHead(404).end('not found'); }
-}).listen(8080, () => console.log('http://localhost:8080'));
+}).listen(8080, '127.0.0.1', () => console.log('http://localhost:8080')); // this computer only: the folder holds private photos

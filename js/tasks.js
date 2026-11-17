@@ -58,17 +58,25 @@ function openTaskSheet(task = null) {
   const due = task?.due_at ? new Date(task.due_at) : null;
   const [courseEl, list] = courseInput(task?.course);
   const err = el('p', { className: 'form-error', role: 'alert' });
+  // Classroom rows are overwritten on every sync, so edits/deletes here would silently come back.
+  const fromClassroom = task?.source === 'classroom';
   const form = el('form', {},
-    field('ชื่องาน', el('input', { name: 'title', value: task?.title || '', required: true, autocomplete: 'off' })),
-    field('วิชา', courseEl), list,
-    el('div', { className: 'row' },
-      field('วันส่ง (ไม่ใส่ก็ได้)', el('input', { type: 'date', name: 'date', value: due ? localDate(due) : '' })),
-      field('เวลา', el('input', { type: 'time', name: 'time', value: due ? `${pad(due.getHours())}:${pad(due.getMinutes())}` : '' }))),
+    el('fieldset', { disabled: fromClassroom, style: 'border:0;padding:0;margin:0' },
+      field('ชื่องาน', el('input', { name: 'title', value: task?.title || '', required: true, autocomplete: 'off' })),
+      field('วิชา', courseEl), list,
+      el('div', { className: 'row' },
+        field('วันส่ง (ไม่ใส่ก็ได้)', el('input', { type: 'date', name: 'date', value: due ? localDate(due) : '' })),
+        field('เวลา', el('input', { type: 'time', name: 'time', value: due ? `${pad(due.getHours())}:${pad(due.getMinutes())}` : '' })))),
+    fromClassroom && el('p', { className: 'muted' }, 'งานนี้มาจาก Classroom แก้ไขใน Classroom แล้วกดรีเฟรชในแอป'),
     err,
-    el('div', { className: 'actions' },
-      task && el('button', { type: 'button', className: 'btn danger', onclick: () => removeTask(task) }, 'ลบงาน'),
-      el('button', { type: 'button', className: 'btn', onclick: closeSheet }, 'ยกเลิก'),
-      el('button', { type: 'submit', className: 'btn primary' }, 'บันทึก')));
+    fromClassroom
+      ? el('div', { className: 'actions' },
+        el('button', { type: 'button', className: 'btn', onclick: closeSheet }, 'ปิด'),
+        task.classroom_link && el('a', { className: 'btn primary', href: task.classroom_link, target: '_blank', rel: 'noopener', style: 'text-align:center;text-decoration:none' }, 'เปิดใน Classroom'))
+      : el('div', { className: 'actions' },
+        task && el('button', { type: 'button', className: 'btn danger', onclick: () => removeTask(task) }, 'ลบงาน'),
+        el('button', { type: 'button', className: 'btn', onclick: closeSheet }, 'ยกเลิก'),
+        el('button', { type: 'submit', className: 'btn primary' }, 'บันทึก')));
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const f = new FormData(form);
@@ -83,7 +91,7 @@ function openTaskSheet(task = null) {
       closeSheet(); render();
     });
   });
-  openSheet(task ? 'แก้ไขงาน' : 'จดงานใหม่', form);
+  openSheet(fromClassroom ? 'งานจาก Classroom' : task ? 'แก้ไขงาน' : 'จดงานใหม่', form);
 }
 
 async function removeTask(task) {

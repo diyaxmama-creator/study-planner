@@ -1,7 +1,8 @@
 :root {
   --bg: #FFF6F3; --card: #FFFFFF; --acc: #F2A7B8; --soft: #FDE4EA;
-  --ink: #4A3A3F; --mute: #7E6A70; --late: #D9667A;
-  --acc-ink: #B85570; /* accent dark enough for text on white */
+  --ink: #4A3A3F; --mute: #6B5960; --late: #B4455A;
+  --acc-ink: #A3455F; /* accent dark enough for text on the page */
+  --on-acc: #4A3A3F;  /* text on the pink accent (white fails contrast) */
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--ink); }
@@ -61,7 +62,7 @@ main { padding: 0 16px 140px; }
 .card .title { display: block; background: none; border: 0; padding: 0; text-align: left; font-weight: 600; font-size: 15px; width: 100%; overflow-wrap: anywhere; }
 .card .meta { color: var(--mute); font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 2px; }
 .card.done .title { text-decoration: line-through; color: var(--mute); }
-.check { width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--acc); background: var(--card); flex: none; margin-top: 1px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; padding: 0; }
+.check { width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--acc); background: var(--card); flex: none; margin-top: 1px; display: flex; align-items: center; justify-content: center; color: var(--on-acc); font-size: 14px; padding: 0; }
 .check[aria-checked="true"] { background: var(--acc); }
 .check:disabled { opacity: .6; cursor: default; }
 .tag { background: var(--soft); color: var(--ink); border-radius: 6px; padding: 0 6px; font-size: 12px; text-decoration: none; border: 0; }
@@ -71,7 +72,7 @@ details.done-group summary { cursor: pointer; list-style: none; }
 details.done-group summary::-webkit-details-marker { display: none; }
 
 /* fab + nav */
-.fab { position: fixed; right: max(16px, calc(50vw - 224px)); bottom: 84px; width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--acc); color: #fff; font-size: 30px; box-shadow: 0 4px 14px rgba(0,0,0,.18); z-index: 5; }
+.fab { position: fixed; right: max(16px, calc(50vw - 224px)); bottom: 84px; width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--acc); color: var(--on-acc); font-size: 30px; box-shadow: 0 4px 14px rgba(0,0,0,.18); z-index: 5; }
 .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; display: flex; background: var(--card); border-top: 1px solid var(--soft); padding-bottom: env(safe-area-inset-bottom); z-index: 5; }
 .nav button { flex: 1; background: none; border: 0; padding: 10px 0 14px; color: var(--mute); font-size: 15px; }
 .nav button.on { color: var(--ink); }
@@ -89,17 +90,17 @@ dialog#sheet::backdrop { background: rgba(74,58,63,.35); }
 .row > * { flex: 1; }
 .actions { display: flex; gap: 8px; margin-top: 8px; }
 .btn { border: 0; border-radius: 14px; padding: 12px 16px; font-size: 16px; background: var(--soft); }
-.btn.primary { background: var(--acc); color: #fff; flex: 1; }
+.btn.primary { background: var(--acc); color: var(--on-acc); flex: 1; }
 .btn.danger { background: none; color: var(--late); }
 .form-error { color: var(--late); font-size: 14px; min-height: 1em; margin: 0 0 8px; }
 
-.toast { position: fixed; left: 50%; bottom: 150px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px; z-index: 20; max-width: 90vw; }
+.toast { position: fixed; left: 50%; bottom: 150px; transform: translateX(-50%); background: var(--ink); color: var(--card); padding: 10px 16px; border-radius: 12px; font-size: 14px; z-index: 20; max-width: 90vw; }
 
 /* notes */
 .search { width: 100%; border: 1.5px solid var(--soft); border-radius: 14px; padding: 10px 14px; background: var(--card); margin: 4px 0 8px; font-size: 16px; }
 .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
 .chips button { flex: none; border: 1.5px solid var(--soft); background: var(--card); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
-.chips button.on { background: var(--acc); border-color: var(--acc); color: #fff; }
+.chips button.on { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }
 .note-line { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; border-bottom: 1px dashed var(--soft); }
 .note-line p { margin: 0; flex: 1; overflow-wrap: anywhere; white-space: pre-wrap; }
 .note-line button { flex: none; }
