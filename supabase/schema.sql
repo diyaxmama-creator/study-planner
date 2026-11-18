@@ -46,6 +46,9 @@ create policy own_notes on notes for all using (user_id = auth.uid()) with check
 create policy own_tasks on tasks for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy own_classes on classes for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 
+-- Newer projects don't grant table access by default. Signed-in users only; RLS above still limits them to their own rows.
+grant select, insert, update, delete on notes, tasks, classes to authenticated;
+
 -- Private bucket for character pictures: <user_id>/<mood>.<ext>
 insert into storage.buckets (id, name, public) values ('characters', 'characters', false);
 
