@@ -1,4 +1,4 @@
-import { MOODS } from './logic.js';
+import { MOODS, moodFromFileName } from './logic.js';
 import { $, el, state, store, attempt, render, views, toast, refreshImages } from './core.js';
 
 const LABELS = {
@@ -29,11 +29,27 @@ async function upload(mood, input) {
   });
 }
 
+async function uploadMany(input) {
+  const files = [...input.files];
+  input.value = '';
+  const matched = files.map(f => [moodFromFileName(f.name), f]).filter(([m]) => m && SLOTS.includes(m));
+  const skipped = files.length - matched.length;
+  if (!matched.length) { toast('ชื่อไฟล์ไม่ตรงช่องไหนเลย (เช่น her-angry.webp)'); return; }
+  await attempt(async () => {
+    for (const [m, f] of matched) await store.uploadMoodImage(m, f);
+    state.images = await store.moodImages();
+    toast(`อัปโหลด ${matched.length} รูปแล้ว` + (skipped ? ` ข้าม ${skipped} ไฟล์ที่ชื่อไม่ตรง` : ''));
+    render();
+  });
+}
+
 function renderSettings() {
   $('#view-settings').replaceChildren(
     el('div', { className: 'intro' },
       el('h2', { className: 'group-title' }, 'รูปตัวละครตามอารมณ์'),
-      el('p', { className: 'muted' }, 'รูปเก็บแบบส่วนตัว เห็นเฉพาะบัญชีนี้ ใช้ได้ทั้งรูปนิ่ง GIF และ MP4 (ไม่เกิน 15MB) ถ้ายังไม่มีรูปของอารมณ์ไหน แอปจะใช้รูปใกล้เคียงแทน')),
+      el('p', { className: 'muted' }, 'รูปเก็บแบบส่วนตัว เห็นเฉพาะบัญชีนี้ ใช้ได้ทั้งรูปนิ่ง GIF และ MP4 (ไม่เกิน 15MB) ถ้ายังไม่มีรูปของอารมณ์ไหน แอปจะใช้รูปใกล้เคียงแทน'),
+      el('label', { className: 'chip file-btn' }, 'อัปโหลดทีละหลายรูป (ตามชื่อไฟล์)',
+        el('input', { type: 'file', multiple: true, accept: 'image/*,video/mp4', onchange: e => uploadMany(e.target) }))),
     el('div', { className: 'panel' }, SLOTS.map(m => el('div', { className: 'card mood-row' },
       thumb(state.images[m]),
       el('div', { className: 'body' },

@@ -82,6 +82,12 @@ export function checkMoodFile(file) {
   if (!okType || file.size > 15 * 1024 * 1024) throw new Error('ไฟล์ต้องเป็นรูปหรือ mp4 ไม่เกิน 15MB');
 }
 
+// 'her-angry.webp' / 'him-waving.png' / 'angry.jpg' -> 'angry'; anything else -> null.
+export function moodFromFileName(name) {
+  const m = /^(?:her-|him-)?([a-z]+)\.[a-z0-9]+$/i.exec(name);
+  return m && MOODS.includes(m[1].toLowerCase()) ? m[1].toLowerCase() : null;
+}
+
 export function moodImageFor(mood, images) {
   const seen = new Set();
   for (let m = mood; m && !seen.has(m); m = MOOD_FALLBACK[m]) {

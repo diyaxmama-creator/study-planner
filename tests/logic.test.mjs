@@ -1,7 +1,7 @@
 process.env.TZ = 'Asia/Bangkok';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { classroomDue, groupTasks, pickMood, moodImageFor, MOOD_TEXT, MOODS, checkMoodFile, clickIsOutside } from '../js/logic.js';
+import { moodFromFileName, classroomDue, groupTasks, pickMood, moodImageFor, MOOD_TEXT, MOODS, checkMoodFile, clickIsOutside } from '../js/logic.js';
 
 test('classroomDue is UTC', () => {
   assert.equal(classroomDue({year:2026,month:11,day:17},{hours:16,minutes:59}).toISOString(), '2026-11-17T16:59:00.000Z');
@@ -72,4 +72,13 @@ test('every mood has Thai copy', () => {
   assert.ok(MOODS.includes('angry'));
   for (const m of MOODS) assert.ok(MOOD_TEXT[m], m);
   assert.equal(MOOD_TEXT.angry, 'ฮึ่ม! งานค้างอยู่นะ');
+});
+
+test('moodFromFileName maps upload-folder names to slots', () => {
+  assert.equal(moodFromFileName('her-angry.webp'), 'angry');
+  assert.equal(moodFromFileName('him-waving.PNG'), 'waving');
+  assert.equal(moodFromFileName('sleepy.jpg'), 'sleepy');
+  assert.equal(moodFromFileName('her-fighting-2.webp'), null);
+  assert.equal(moodFromFileName('cat-sync.webp'), null);
+  assert.equal(moodFromFileName('Joyful Hijabi Jump.png'), null);
 });
