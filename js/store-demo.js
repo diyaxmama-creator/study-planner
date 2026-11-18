@@ -1,13 +1,9 @@
 // In-memory store for ?demo=1 and tests. Same interface as store-supabase.js.
 import { checkMoodFile } from './logic.js';
 
-// ?demo=1 shows her pictures (your app); ?demo=him shows his (her app). No allclear picture: falls back to cheering.
-const DEMO_IMAGES = {
-  her: { angry: 'her-angry.webp', fighting: 'her-fighting-2.webp', waving: 'her-waving.webp', studying: 'her-studying.webp',
-    cheering: 'her-cheering.webp', sleepy: 'her-sleepy.webp', morning: 'her-morning.webp', books: 'her-books.webp' },
-  him: { angry: 'him-angry.webp', waving: 'him-thumbsup.webp', studying: 'him-studying.webp',
-    cheering: 'him-cheering.webp', sleepy: 'him-sleepy.webp', morning: 'him-morning.webp', books: 'him-books.webp' },
-};
+// Both accounts use her pictures. No allclear picture: falls back to cheering.
+const DEMO_IMAGES = { angry: 'her-angry.webp', fighting: 'her-fighting-2.webp', waving: 'her-waving.webp', studying: 'her-studying.webp',
+  cheering: 'her-cheering.webp', sleepy: 'her-sleepy.webp', morning: 'her-morning.webp', books: 'her-books.webp' };
 
 // Fake Classroom API for ?demo: one old-term course and two current ones.
 const daysAgo = n => new Date(Date.now() - n * 864e5).toISOString();
@@ -27,7 +23,7 @@ async function demoClassroom(url) {
   return { ok: true, status: 200, json: async () => body };
 }
 
-export function createStore({ failLoad = false, who = 'her' } = {}) {
+export function createStore({ failLoad = false } = {}) {
   let seq = 0, prefs = { picked: [], seen: [] };
   const id = () => 'demo-' + ++seq;
   const at = (days, h = 23, m = 59) => { const d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, m, 0, 0); return d.toISOString(); };
@@ -53,7 +49,7 @@ export function createStore({ failLoad = false, who = 'her' } = {}) {
     { id: id(), course: 'MATH102', weekday: 3, start_time: '13:00', end_time: '16:00', room: 'อาคาร 1 ห้อง 101' },
     { id: id(), course: 'CS101', weekday: new Date().getDay(), start_time: '09:00', end_time: '11:00', room: 'Lab 3' },
   ];
-  const images = Object.fromEntries(Object.entries(DEMO_IMAGES[who]).map(([m, f]) => [m, { url: 'assets/characters/' + f, type: 'image/webp' }]));
+  const images = Object.fromEntries(Object.entries(DEMO_IMAGES).map(([m, f]) => [m, { url: 'assets/characters/' + f, type: 'image/webp' }]));
 
   const save = (list, row) => {
     if (!row.id) { const r = { ...row, id: id(), created_at: new Date().toISOString() }; list.push(r); return r; }
