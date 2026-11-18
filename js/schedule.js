@@ -18,7 +18,7 @@ function renderSchedule() {
         : el('p', { className: 'muted' }, 'วันนี้ไม่มีเรียน')));
   });
   $('#view-schedule').replaceChildren(...days.filter(Boolean),
-    !state.classes.length ? el('p', { className: 'empty' }, 'ยังไม่มีตารางเรียน', el('span', { className: 'muted' }, 'กด ＋ เพื่อเพิ่มวิชา')) : null);
+    !state.classes.length ? el('p', { className: 'empty' }, 'ยังไม่มีตารางเรียน', el('span', { className: 'muted' }, 'กด ＋ เพื่อเพิ่มวิชา')) : ''); // replaceChildren would print null as text
 }
 
 function editClass(c = null) {

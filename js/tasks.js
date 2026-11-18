@@ -54,7 +54,7 @@ function renderTasks() {
     ...(sections.length ? sections : [el('p', { className: 'empty' }, 'ไม่มีงานค้าง เย้!', el('span', { className: 'muted' }, 'กด ＋ เพื่อจดงานใหม่'))]),
     groups.done.length ? el('details', { className: 'done-group group' },
       el('summary', { className: 'group-title' }, icon('check', '#6B5960'), 'เสร็จแล้ว', el('span', { className: 'count' }, String(groups.done.length))),
-      el('div', { className: 'panel' }, groups.done.map(t => taskCard(t, 'done')))) : null,
+      el('div', { className: 'panel' }, groups.done.map(t => taskCard(t, 'done')))) : '', // not null: replaceChildren prints it
   );
 }
 
