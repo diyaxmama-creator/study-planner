@@ -39,6 +39,7 @@ async function boot() {
     $('#login-btn').onclick = () => attempt(() => store.signIn());
     return;
   }
+  state.userEmail = user.email; // shown in Settings: two people share the app, so make the account obvious
   const today = localDate(new Date());
   state.firstOpenToday = safeStorage.get('lastOpenDay') !== today;
   safeStorage.set('lastOpenDay', today);

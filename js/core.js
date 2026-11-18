@@ -119,8 +119,9 @@ export async function refreshImages({ force = false } = {}) {
   try { state.images = await store.moodImages(); } catch { return; }
   render();
 }
+// Coming back to the app also picks up pictures uploaded from another device (and renews expiring links).
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && Date.now() - imagesAt > 50 * 60_000) refreshImages({ force: true });
+  if (document.visibilityState === 'visible' && !$('#app').hidden) refreshImages();
 });
 
 export function celebrate() {

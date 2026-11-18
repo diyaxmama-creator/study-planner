@@ -59,6 +59,7 @@ function renderSettings() {
       el('label', { className: 'chip file-btn' }, state.images[m] ? 'เปลี่ยน' : 'อัปโหลด',
         el('input', { type: 'file', accept: 'image/*,video/mp4', 'aria-label': 'อัปโหลดรูป ' + LABELS[m][0],
           onchange: e => upload(m, e.target) }))))),
+    el('p', { className: 'muted who' }, ...(state.userEmail ? ['ล็อกอินเป็น ', el('b', {}, state.userEmail)] : [])),
     el('div', { className: 'settings-actions' },
       el('button', { type: 'button', className: 'btn', onclick: () => refresh({ choose: true }) }, 'เลือกวิชาจาก Classroom'),
       el('button', { type: 'button', className: 'btn', onclick: () => attempt(async () => {
