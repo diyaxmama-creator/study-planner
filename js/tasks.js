@@ -89,7 +89,7 @@ function openTaskSheet(task = null) {
       ? el('div', { className: 'actions-stack' },
         el('div', { className: 'actions' },
           el('button', { type: 'button', className: 'btn', onclick: () => hideTasks([task], 'ซ่อนงานนี้แล้ว') }, 'ซ่อนงานนี้'),
-          task.course && el('button', { type: 'button', className: 'btn', onclick: () => hideTasks(state.tasks.filter(t => t.source === 'classroom' && t.course === task.course), `ซ่อนงานวิชา ${task.course} แล้ว`) }, 'ซ่อนทั้งวิชา')),
+          task.course && el('button', { type: 'button', className: 'btn', onclick: () => hideTasks(state.tasks.filter(t => t.source === 'classroom' && t.course === task.course), `ซ่อนงานวิชา ${task.course} แล้ว`, task.course) }, 'ซ่อนทั้งวิชา')),
         el('div', { className: 'actions' },
         el('button', { type: 'button', className: 'btn', onclick: closeSheet }, 'ปิด'),
         task.classroom_link && el('a', { className: 'btn primary', href: task.classroom_link, target: '_blank', rel: 'noopener', style: 'text-align:center;text-decoration:none' }, 'เปิดใน Classroom')))
@@ -115,13 +115,26 @@ function openTaskSheet(task = null) {
 }
 
 // Classroom work can't be deleted (the next sync would bring it back), so it is hidden instead.
-async function hideTasks(list, msg) {
+// A hidden subject is remembered by name so work the teacher adds later stays hidden too.
+const rememberHidden = async (course, on) => {
+  const p = await store.getClassroomPrefs();
+  const names = new Set(p.hiddenNames);
+  on ? names.add(course) : names.delete(course);
+  await store.saveClassroomPrefs({ ...p, hiddenNames: [...names] });
+};
+
+async function hideTasks(list, msg, course = null) {
   const ids = list.map(t => t.id);
   await attempt(async () => {
     await store.setHidden(ids, true);
+    if (course) await rememberHidden(course, true);
     state.tasks = state.tasks.filter(t => !ids.includes(t.id));
     closeSheet(); render();
-    toast(msg, undo(async () => { await store.setHidden(ids, false); state.tasks.push(...list); }));
+    toast(msg, undo(async () => {
+      await store.setHidden(ids, false);
+      if (course) await rememberHidden(course, false);
+      state.tasks.push(...list);
+    }));
   });
 }
 

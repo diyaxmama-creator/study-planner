@@ -48,8 +48,15 @@ export function toast(msg, action = null) {
   showToast(t, true);
   clearTimeout(toast.timer); toast.timer = setTimeout(() => showToast(t, false), action ? 5000 : 3000);
 }
+// Our own errors are Thai; library/network ones are English, so show a Thai line and keep the detail in the console.
+export function thaiError(e) {
+  const msg = e?.message || '';
+  if (/[฀-๿]/.test(msg)) return msg;
+  console.error(e);
+  return /fetch|network|offline/i.test(msg) ? 'เชื่อมต่ออินเทอร์เน็ตไม่ได้ ลองใหม่อีกครั้ง' : 'ทำไม่สำเร็จ ลองใหม่อีกครั้ง';
+}
 export async function attempt(fn) {
-  try { return await fn(); } catch (e) { toast(e.message || 'เกิดข้อผิดพลาด'); }
+  try { return await fn(); } catch (e) { toast(thaiError(e)); }
 }
 
 export const pad = n => String(n).padStart(2, '0');

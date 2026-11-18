@@ -32,7 +32,7 @@ export function createStore() {
     // Saved on the account (user_metadata) so phone and computer share the choice.
     async getClassroomPrefs() {
       const p = (await sb.auth.getUser()).data.user?.user_metadata?.classroom;
-      return { picked: p?.picked ?? [], seen: p?.seen ?? [] };
+      return { picked: p?.picked ?? [], seen: p?.seen ?? [], hiddenNames: p?.hiddenNames ?? [] };
     },
     async saveClassroomPrefs(p) { await run(sb.auth.updateUser({ data: { classroom: p } })); },
     async unhideAll() { await run(sb.from('tasks').update({ hidden: false }).eq('hidden', true)); },
@@ -78,10 +78,11 @@ export function createStore() {
     async uploadMoodImage(mood, file) {
       checkMoodFile(file);
       const me = await uid();
-      const old = (await run(bucket().list(me))).filter(f => f.name.split('.')[0] === mood).map(f => `${me}/${f.name}`);
-      if (old.length) await run(bucket().remove(old));
       const ext = Object.keys(TYPES).find(k => TYPES[k] === file.type) || extOf(file.name) || 'webp';
-      await run(bucket().upload(`${me}/${mood}.${ext}`, file, { contentType: file.type, upsert: true }));
+      const name = `${mood}.${ext}`;
+      await run(bucket().upload(`${me}/${name}`, file, { contentType: file.type, upsert: true })); // upload first: a failure keeps the old picture
+      const stale = (await run(bucket().list(me))).filter(f => f.name.split('.')[0] === mood && f.name !== name).map(f => `${me}/${f.name}`);
+      if (stale.length) await run(bucket().remove(stale));
     },
   };
 }

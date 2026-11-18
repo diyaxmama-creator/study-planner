@@ -1,7 +1,7 @@
 import { getClassroomToken, fetchCourses, fetchClassroom, toTaskRows } from './classroom.js';
 import { GOOGLE_CLIENT_ID } from './config.js';
 import { defaultPicked, courseHidingChanges } from './logic.js';
-import { $, el, state, store, demo, render, safeStorage, openSheet, closeSheet } from './core.js';
+import { $, el, state, store, demo, render, safeStorage, openSheet, closeSheet, thaiError } from './core.js';
 
 const STALE_MS = 6 * 60 * 60 * 1000;
 
@@ -59,17 +59,18 @@ export async function refresh({ choose = false } = {}) {
       if (!picked) return;
       setSyncing(true);
       for (const [name, hidden] of courseHidingChanges(courses, prefs, picked)) await store.setCourseHidden(name, hidden);
-      prefs = { picked, seen: [...new Set([...prefs.seen, ...courses.map(c => c.id)])] };
+      prefs = { ...prefs, picked, seen: [...new Set([...prefs.seen, ...courses.map(c => c.id)])] };
       await store.saveClassroomPrefs(prefs);
     }
     const { items, failedCourses } = await fetchClassroom(token, fetchFn, courses.filter(c => prefs.picked.includes(c.id)));
     await store.upsertClassroomTasks(toTaskRows(items, user.id));
+    for (const name of prefs.hiddenNames) await store.setCourseHidden(name, true); // new work in a hidden subject
     state.tasks = await store.listTasks();
     safeStorage.set('lastSync', String(Date.now()));
     banner(failedCourses.length ? 'ดึงไม่ได้บางวิชา: ' + failedCourses.join(', ') : '');
     updateSyncInfo();
   } catch (e) {
-    banner('ดึงงานจาก Classroom ไม่ได้ตอนนี้ จดงานเองได้ตามปกติ (' + (e.message || 'error') + ')');
+    banner('ดึงงานจาก Classroom ไม่ได้ตอนนี้: ' + thaiError(e));
   } finally {
     setSyncing(false);
   }

@@ -24,7 +24,7 @@ async function demoClassroom(url) {
 }
 
 export function createStore({ failLoad = false } = {}) {
-  let seq = 0, prefs = { picked: [], seen: [] };
+  let seq = 0, prefs = { picked: [], seen: [], hiddenNames: [] };
   const id = () => 'demo-' + ++seq;
   const at = (days, h = 23, m = 59) => { const d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, m, 0, 0); return d.toISOString(); };
   const today = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD local

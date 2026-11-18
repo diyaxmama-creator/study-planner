@@ -27,6 +27,7 @@ export async function loadAll() {
 }
 
 async function boot() {
+  $('#boot').remove(); // the page shows a loading cat until this module (and Supabase) has loaded
   if (!store) {
     $('#login').hidden = false;
     $('#login-btn').hidden = true;

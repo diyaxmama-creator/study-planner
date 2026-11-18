@@ -63,7 +63,7 @@ function renderSettings() {
     el('div', { className: 'settings-actions' },
       el('button', { type: 'button', className: 'btn', onclick: () => refresh({ choose: true }) }, 'เลือกวิชาจาก Classroom'),
       el('button', { type: 'button', className: 'btn', onclick: () => attempt(async () => {
-        await store.unhideAll(); state.tasks = await store.listTasks(); toast('แสดงงานที่ซ่อนไว้ทั้งหมดแล้ว'); render();
+        await store.unhideAll(); await store.saveClassroomPrefs({ ...(await store.getClassroomPrefs()), hiddenNames: [] }); state.tasks = await store.listTasks(); toast('แสดงงานที่ซ่อนไว้ทั้งหมดแล้ว'); render();
       }) }, 'แสดงงานที่ซ่อนไว้'),
       el('button', { type: 'button', className: 'btn', onclick: () => attempt(async () => { await store.signOut(); location.reload(); }) }, 'ออกจากระบบ')));
 }
