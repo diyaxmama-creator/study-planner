@@ -83,13 +83,20 @@ function editNote(note = null) {
   openSheet(note ? 'แก้ไขโน้ต' : 'จดโน้ตใหม่', form);
 }
 
+// No confirm(): browsers can silently block it. Undo brings the note back and re-links its tasks.
 async function removeNote(note) {
-  if (!confirm('ลบโน้ตนี้ใช่ไหม?')) return;
+  const linked = state.tasks.filter(t => t.note_id === note.id);
   await attempt(async () => {
     await store.deleteNote(note.id);
     state.notes = state.notes.filter(n => n.id !== note.id);
-    for (const t of state.tasks) if (t.note_id === note.id) t.note_id = null;
+    for (const t of linked) t.note_id = null;
     closeSheet(); render();
+    toast('ลบโน้ตแล้ว', { label: 'เลิกทำ', run: () => attempt(async () => {
+      const back = await store.saveNote({ course: note.course, note_date: note.note_date, body: note.body });
+      for (const t of linked) Object.assign(t, await store.updateTask(t.id, { note_id: back.id }));
+      state.notes = [back, ...state.notes].sort((a, b) => b.note_date.localeCompare(a.note_date));
+      render();
+    }) });
   });
 }
 

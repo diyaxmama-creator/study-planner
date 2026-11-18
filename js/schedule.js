@@ -1,4 +1,4 @@
-import { $, el, state, store, attempt, render, views, openSheet, closeSheet, field, courseInput } from './core.js';
+import { $, el, state, store, attempt, render, views, openSheet, closeSheet, field, courseInput, toast } from './core.js';
 
 const DAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์']; // index = JS getDay()
 const hm = t => (t || '').slice(0, 5);
@@ -55,11 +55,15 @@ function editClass(c = null) {
 }
 
 async function removeClass(c) {
-  if (!confirm('ลบวิชานี้ออกจากตารางใช่ไหม?')) return;
   await attempt(async () => {
     await store.deleteClass(c.id);
     state.classes = state.classes.filter(x => x.id !== c.id);
     closeSheet(); render();
+    toast('ลบวิชาแล้ว', { label: 'เลิกทำ', run: () => attempt(async () => {
+      const { id, ...rest } = c;
+      state.classes.push(await store.saveClass(rest));
+      render();
+    }) });
   });
 }
 
