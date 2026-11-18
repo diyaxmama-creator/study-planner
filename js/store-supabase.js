@@ -23,7 +23,10 @@ export function createStore() {
     },
     async signOut() { await sb.auth.signOut(); },
 
-    listTasks: () => run(sb.from('tasks').select('*').order('created_at')),
+    // Filtered here (not in SQL) so the app still loads before the hidden column is added.
+    listTasks: async () => (await run(sb.from('tasks').select('*').order('created_at'))).filter(t => !t.hidden),
+    async setHidden(ids, hidden) { if (ids.length) await run(sb.from('tasks').update({ hidden }).in('id', ids)); },
+    async unhideAll() { await run(sb.from('tasks').update({ hidden: false }).eq('hidden', true)); },
     addTask: ({ title, course = '', due_at = null, source = 'manual', note_id = null }) =>
       run(sb.from('tasks').insert({ title: needTitle(title), course, due_at, source, note_id }).select().single()),
     updateTask(id, patch) {

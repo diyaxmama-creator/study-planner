@@ -22,6 +22,7 @@ create table tasks (
   classroom_link text,
   classroom_state text,
   done_manual boolean not null default false,
+  hidden boolean not null default false, -- Classroom work the user hid; sync never touches it
   note_id uuid references notes on delete set null,
   created_at timestamptz default now(),
   unique (user_id, classroom_id)

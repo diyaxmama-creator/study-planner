@@ -140,6 +140,7 @@ dialog#sheet fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .form-error { color: var(--late); font-size: 14px; }
 .form-error:empty { display: none; }
 
+.toast-btn { margin-left: var(--s3); background: none; border: 0; padding: var(--s1) var(--s2); color: var(--acc); font-weight: 600; font-size: 14px; text-decoration: underline; }
 .toast { position: fixed; left: 50%; bottom: 148px; transform: translateX(-50%); background: var(--ink); color: var(--card); padding: var(--s3) var(--s4); font-size: 14px; z-index: 20; max-width: calc(100vw - 32px); box-shadow: var(--drop); }
 
 /* ---------- notes ---------- */
@@ -165,7 +166,8 @@ dialog#sheet fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .mood-row b { font-weight: 600; font-size: 15px; }
 .file-btn { position: relative; overflow: hidden; }
 .file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.settings-actions { margin-top: var(--s5); display: flex; justify-content: center; }
+.actions-stack { display: grid; gap: var(--s3); }
+.settings-actions { margin-top: var(--s5); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s3); }
 
 /* ---------- the cat: decoration only (never a mood) ---------- */
 /* sits on the hero's floor, next to her picture; never covers content */

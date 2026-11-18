@@ -51,7 +51,7 @@ export function createStore({ failLoad = false, who = 'her' } = {}) {
     async signOut() {},
     async listTasks() {
       if (failLoad) throw new Error('โหลดข้อมูลไม่สำเร็จ (โหมดทดสอบ)');
-      return tasks.map(t => ({ ...t }));
+      return tasks.filter(t => !t.hidden).map(t => ({ ...t }));
     },
     async addTask({ title, course = '', due_at = null, source = 'manual', note_id = null }) {
       if (!title?.trim()) throw new Error('ต้องใส่ชื่องาน');
@@ -64,6 +64,8 @@ export function createStore({ failLoad = false, who = 'her' } = {}) {
       return { ...save(tasks, { ...patch, id: tid }) };
     },
     async deleteTask(tid) { remove(tasks, tid); },
+    async setHidden(ids, hidden) { for (const t of tasks) if (ids.includes(t.id)) t.hidden = hidden; },
+    async unhideAll() { for (const t of tasks) t.hidden = false; },
     async upsertClassroomTasks(rows) {
       for (const r of rows) {
         const old = tasks.find(t => t.classroom_id === r.classroom_id);

@@ -1,6 +1,6 @@
 import { groupTasks, isDone } from './logic.js';
 import { icon } from './pixel.js';
-import { $, el, state, store, attempt, render, views, hooks, openSheet, closeSheet, field, courseInput, pad, localDate, celebrate } from './core.js';
+import { $, el, state, store, attempt, render, views, hooks, openSheet, closeSheet, field, courseInput, pad, localDate, celebrate, toast } from './core.js';
 
 const GROUPS = [['overdue', 'เลยกำหนด'], ['today', 'วันนี้'], ['tomorrow', 'พรุ่งนี้'], ['week', 'สัปดาห์นี้'], ['later', 'ภายหลัง'], ['undated', 'ยังไม่ระบุวันส่ง']];
 const fmtTime = d => d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
@@ -47,12 +47,15 @@ function renderTasks() {
   );
 }
 
-async function toggleDone(task) {
+const undo = run => ({ label: 'เลิกทำ', run: () => attempt(async () => { await run(); render(); }) });
+
+async function toggleDone(task, isUndo = false) {
   const nowDone = !task.done_manual;
   await attempt(async () => {
     Object.assign(task, await store.updateTask(task.id, { done_manual: nowDone }));
-    if (nowDone) celebrate();
+    if (nowDone && !isUndo) celebrate();
     render();
+    if (!isUndo) toast(nowDone ? 'ย้ายไป "เสร็จแล้ว"' : 'ย้ายกลับมาเป็นงานค้าง', undo(() => toggleDone(task, true)));
   });
 }
 
@@ -72,9 +75,13 @@ function openTaskSheet(task = null) {
     fromClassroom && el('p', { className: 'muted' }, 'งานนี้มาจาก Classroom แก้ไขใน Classroom แล้วกดรีเฟรชในแอป'),
     err,
     fromClassroom
-      ? el('div', { className: 'actions' },
+      ? el('div', { className: 'actions-stack' },
+        el('div', { className: 'actions' },
+          el('button', { type: 'button', className: 'btn', onclick: () => hideTasks([task], 'ซ่อนงานนี้แล้ว') }, 'ซ่อนงานนี้'),
+          task.course && el('button', { type: 'button', className: 'btn', onclick: () => hideTasks(state.tasks.filter(t => t.source === 'classroom' && t.course === task.course), `ซ่อนงานวิชา ${task.course} แล้ว`) }, 'ซ่อนทั้งวิชา')),
+        el('div', { className: 'actions' },
         el('button', { type: 'button', className: 'btn', onclick: closeSheet }, 'ปิด'),
-        task.classroom_link && el('a', { className: 'btn primary', href: task.classroom_link, target: '_blank', rel: 'noopener', style: 'text-align:center;text-decoration:none' }, 'เปิดใน Classroom'))
+        task.classroom_link && el('a', { className: 'btn primary', href: task.classroom_link, target: '_blank', rel: 'noopener', style: 'text-align:center;text-decoration:none' }, 'เปิดใน Classroom')))
       : el('div', { className: 'actions' },
         task && el('button', { type: 'button', className: 'btn danger', onclick: () => removeTask(task) }, 'ลบงาน'),
         el('button', { type: 'button', className: 'btn', onclick: closeSheet }, 'ยกเลิก'),
@@ -96,12 +103,27 @@ function openTaskSheet(task = null) {
   openSheet(fromClassroom ? 'งานจาก Classroom' : task ? 'แก้ไขงาน' : 'จดงานใหม่', form);
 }
 
+// Classroom work can't be deleted (the next sync would bring it back), so it is hidden instead.
+async function hideTasks(list, msg) {
+  const ids = list.map(t => t.id);
+  await attempt(async () => {
+    await store.setHidden(ids, true);
+    state.tasks = state.tasks.filter(t => !ids.includes(t.id));
+    closeSheet(); render();
+    toast(msg, undo(async () => { await store.setHidden(ids, false); state.tasks.push(...list); }));
+  });
+}
+
 async function removeTask(task) {
-  if (!confirm('ลบงานนี้ใช่ไหม?')) return;
   await attempt(async () => {
     await store.deleteTask(task.id);
     state.tasks = state.tasks.filter(t => t.id !== task.id);
     closeSheet(); render();
+    toast('ลบงานแล้ว', undo(async () => {
+      let t = await store.addTask(task);
+      if (task.done_manual) t = await store.updateTask(t.id, { done_manual: true });
+      state.tasks.push(t);
+    }));
   });
 }
 

@@ -35,10 +35,11 @@ export const state = {
   loadFailed: false, // never show "all clear" when we simply couldn't load
 };
 
-export function toast(msg) {
+export function toast(msg, action = null) {
   const t = $('#toast');
-  t.textContent = msg; t.hidden = false;
-  clearTimeout(toast.timer); toast.timer = setTimeout(() => { t.hidden = true; }, 3000);
+  t.replaceChildren(msg, action ? el('button', { type: 'button', className: 'toast-btn', onclick: () => { t.hidden = true; action.run(); } }, action.label) : '');
+  t.hidden = false;
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => { t.hidden = true; }, action ? 5000 : 3000);
 }
 export async function attempt(fn) {
   try { return await fn(); } catch (e) { toast(e.message || 'เกิดข้อผิดพลาด'); }

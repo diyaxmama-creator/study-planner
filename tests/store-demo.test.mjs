@@ -46,3 +46,14 @@ test('upsertClassroomTasks keeps manual done on re-sync', async () => {
   assert.equal(rows[0].title, 'A2');
   assert.equal(rows[0].done_manual, true);
 });
+
+test('hidden tasks leave the list and come back with unhideAll', async () => {
+  const s = createStore();
+  const cr = (await s.listTasks()).filter(t => t.source === 'classroom');
+  await s.setHidden(cr.map(t => t.id), true);
+  assert.equal((await s.listTasks()).filter(t => t.source === 'classroom').length, 0);
+  await s.upsertClassroomTasks([{ classroom_id: cr[0].classroom_id, title: 'synced again', source: 'classroom' }]);
+  assert.equal((await s.listTasks()).some(t => t.title === 'synced again'), false); // a sync must not unhide
+  await s.unhideAll();
+  assert.equal((await s.listTasks()).filter(t => t.source === 'classroom').length, cr.length);
+});

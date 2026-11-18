@@ -59,6 +59,9 @@ function renderSettings() {
         el('input', { type: 'file', accept: 'image/*,video/mp4', 'aria-label': 'อัปโหลดรูป ' + LABELS[m][0],
           onchange: e => upload(m, e.target) }))))),
     el('div', { className: 'settings-actions' },
+      el('button', { type: 'button', className: 'btn', onclick: () => attempt(async () => {
+        await store.unhideAll(); state.tasks = await store.listTasks(); toast('แสดงงานที่ซ่อนไว้ทั้งหมดแล้ว'); render();
+      }) }, 'แสดงงานที่ซ่อนไว้'),
       el('button', { type: 'button', className: 'btn', onclick: () => attempt(async () => { await store.signOut(); location.reload(); }) }, 'ออกจากระบบ')));
 }
 
