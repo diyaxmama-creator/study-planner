@@ -16,7 +16,7 @@ function renderList() {
     el('div', { className: 'body' },
       el('button', { className: 'title', type: 'button', onclick: () => openNote(n) }, n.body.split('\n').find(l => l.trim()) || '(โน้ตว่าง)'),
       el('div', { className: 'meta' }, n.course && el('span', {}, n.course), el('span', {}, fmtDate(n.note_date))))))
-    : [el('p', { className: 'empty' }, state.notes.length ? 'ไม่พบโน้ตที่ค้นหา' : 'ยังไม่มีโน้ต', !state.notes.length && el('span', { className: 'muted' }, 'กด ＋ เพื่อจดโน้ตแรก'))]));
+    : [el('p', { className: 'empty' }, !state.notes.length && el('img', { className: 'empty-cat', src: 'img/cat-notes.webp', alt: '' }), state.notes.length ? 'ไม่พบโน้ตที่ค้นหา' : 'ยังไม่มีโน้ต', !state.notes.length && el('span', { className: 'muted' }, 'กด ＋ เพื่อจดโน้ตแรก'))]));
 }
 
 function renderNotes() {

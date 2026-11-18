@@ -71,17 +71,23 @@ main { padding: 0 var(--s4) 136px; }
 @keyframes breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.02) } }
 @keyframes jump { 0%,100% { transform: translateY(0) } 40% { transform: translateY(-14px) } 60% { transform: translateY(-14px) } }
 @keyframes wobble { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-3deg) } 75% { transform: rotate(3deg) } }
+@keyframes huff { 0%,60%,100% { transform: translateX(0) scale(1) } 66% { transform: translateX(-3px) scale(1.02) } 72% { transform: translateX(3px) scale(1.02) } 78% { transform: translateX(-2px) scale(1.02) } 84% { transform: translateX(0) scale(1) } }
+@keyframes stretch { 0%,100% { transform: scaleY(1) } 50% { transform: scaleY(1.03) } }
 @keyframes float { 0% { transform: translateY(0); opacity: 0 } 20% { opacity: 1 } 100% { transform: translateY(-90px); opacity: 0 } }
 .pic.anim.mood-fighting img { animation: pump 1.6s ease-in-out infinite; }
 .pic.anim.mood-waving img { animation: sway 2.4s ease-in-out infinite; }
-.pic.anim.mood-studying img, .pic.anim.mood-morning img, .pic.anim.mood-allclear img, .pic.anim.mood-notes img { animation: breathe 3s ease-in-out infinite; }
+.pic.anim.mood-angry img { animation: huff 2.4s ease-in-out infinite; }
+.pic.anim.mood-morning img { animation: stretch 2.6s ease-in-out infinite; }
+.pic.anim.mood-studying img, .pic.anim.mood-allclear img, .pic.anim.mood-notes img { animation: breathe 3s ease-in-out infinite; }
 .pic.anim.mood-cheering img { animation: jump .8s ease-in-out infinite; }
 .pic.anim.mood-sleepy img { animation: sway 4.5s ease-in-out infinite; }
 .pic.anim.mood-books img { animation: wobble 1.8s ease-in-out infinite; }
 .pic.anim.mood-sync img { animation: wobble .7s ease-in-out infinite; }
 .heart { position: absolute; bottom: 30px; color: var(--acc-ink); font-size: 18px; animation: float 3s ease-in infinite; }
 .heart:nth-child(2) { left: 20%; animation-delay: 1s; } .heart:nth-child(3) { left: 60%; animation-delay: 2s; } .heart:nth-child(4) { left: 80%; animation-delay: .5s; }
-@media (prefers-reduced-motion: reduce) { .pic img, .heart { animation: none !important; } .heart { display: none; } }
+.deco-cat, .empty-cat { transform-origin: 50% 100%; animation: breathe 3.2s ease-in-out infinite; }
+.empty-cat { width: 96px; mix-blend-mode: multiply; }
+@media (prefers-reduced-motion: reduce) { .pic img, .heart, .deco-cat, .empty-cat { animation: none !important; } .heart { display: none; } }
 
 /* ---------- sections: heading sits close to its own panel, far from the previous one ---------- */
 .group { margin-top: var(--s5); }

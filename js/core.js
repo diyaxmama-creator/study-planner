@@ -76,6 +76,8 @@ export function renderHeader() {
     : pickMood({ groups, now, justCompleted: state.justCompleted, syncing: state.syncing, firstOpenToday: state.firstOpenToday });
   renderMascot($('#app'), mood, state.images,
     now.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'short' }), refreshImages);
+  const cat = $('.deco-cat'), catSrc = state.syncing ? 'img/cat-sync.webp' : 'img/cat.webp';
+  if (cat.getAttribute('src') !== catSrc) cat.src = catSrc;
   const pill = $('#overdue-pill');
   pill.hidden = !groups.overdue.length;
   pill.replaceChildren(icon('heart', '#B4455A'), 'เลยกำหนด ', el('span', { className: 'count' }, String(groups.overdue.length)), ' งาน');

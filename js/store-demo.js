@@ -2,7 +2,7 @@
 import { checkMoodFile } from './logic.js';
 
 const DEMO_IMAGES = {
-  fighting: 'her-fighting-2.webp', waving: 'her-waving.webp', // no angry/allclear yet: they fall back to fighting/cheering
+  angry: 'her-angry.webp', fighting: 'her-fighting-2.webp', waving: 'her-waving.webp', // no allclear picture: falls back to cheering
   studying: 'her-studying.webp', cheering: 'her-cheering.webp', sleepy: 'her-sleepy.webp',
   morning: 'her-morning.webp', books: 'her-books.webp',
 };
