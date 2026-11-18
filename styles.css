@@ -108,6 +108,7 @@ main { padding: 0 var(--s4) 136px; }
 .check[aria-checked="true"] { background: var(--acc); }
 .check:disabled { opacity: .6; cursor: default; }
 .tag { background: var(--soft); color: var(--ink); padding: 0 6px; font-size: 12px; line-height: 20px; font-weight: 600; text-decoration: none; border: 0; }
+.tag.late { background: var(--card); color: var(--late); box-shadow: 0 0 0 1px var(--late); }
 a.tag, button.tag { cursor: pointer; }
 .empty { text-align: center; color: var(--mute); padding: var(--s6) var(--s4); line-height: 1.6; display: grid; gap: var(--s3); justify-items: center; }
 .panel .empty, .panel > .muted { padding: var(--s4) 0; }
@@ -166,6 +167,9 @@ dialog#sheet fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .mood-row b { font-weight: 600; font-size: 15px; }
 .file-btn { position: relative; overflow: hidden; }
 .file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.course-pick { margin: var(--s3) 0; max-height: 50vh; overflow: auto; }
+.course-pick .card { cursor: pointer; }
+.course-pick input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--acc-ink); flex: none; }
 .actions-stack { display: grid; gap: var(--s3); }
 .settings-actions { margin-top: var(--s5); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s3); }
 

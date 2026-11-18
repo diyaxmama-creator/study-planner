@@ -28,6 +28,13 @@ export function createStore() {
     async setHidden(ids, hidden) { // batches keep the URL short when a whole subject has hundreds of tasks
       for (let i = 0; i < ids.length; i += 50) await run(sb.from('tasks').update({ hidden }).in('id', ids.slice(i, i + 50)));
     },
+    async setCourseHidden(course, hidden) { await run(sb.from('tasks').update({ hidden }).eq('source', 'classroom').eq('course', course)); },
+    // Saved on the account (user_metadata) so phone and computer share the choice.
+    async getClassroomPrefs() {
+      const p = (await sb.auth.getUser()).data.user?.user_metadata?.classroom;
+      return { picked: p?.picked ?? [], seen: p?.seen ?? [] };
+    },
+    async saveClassroomPrefs(p) { await run(sb.auth.updateUser({ data: { classroom: p } })); },
     async unhideAll() { await run(sb.from('tasks').update({ hidden: false }).eq('hidden', true)); },
     addTask: ({ title, course = '', due_at = null, source = 'manual', note_id = null }) =>
       run(sb.from('tasks').insert({ title: needTitle(title), course, due_at, source, note_id }).select().single()),

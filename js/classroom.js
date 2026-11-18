@@ -30,8 +30,11 @@ async function getAll(path, key, token, fetchFn) {
   return out;
 }
 
-export async function fetchClassroom(token, fetchFn = fetch) {
-  const courses = await getAll('courses?courseStates=ACTIVE&studentId=me&pageSize=100', 'courses', token, fetchFn);
+export const fetchCourses = (token, fetchFn = fetch) =>
+  getAll('courses?courseStates=ACTIVE&studentId=me&pageSize=100', 'courses', token, fetchFn);
+
+export async function fetchClassroom(token, fetchFn = fetch, courses = null) {
+  courses ??= await fetchCourses(token, fetchFn);
   const items = [], failedCourses = [];
   await Promise.all(courses.map(async course => {
     try {

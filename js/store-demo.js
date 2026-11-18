@@ -9,8 +9,26 @@ const DEMO_IMAGES = {
     cheering: 'him-cheering.webp', sleepy: 'him-sleepy.webp', morning: 'him-morning.webp', books: 'him-books.webp' },
 };
 
+// Fake Classroom API for ?demo: one old-term course and two current ones.
+const daysAgo = n => new Date(Date.now() - n * 864e5).toISOString();
+const dueIn = n => { const d = new Date(Date.now() + n * 864e5); return { dueDate: { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() }, dueTime: { hours: 16, minutes: 59 } }; };
+const DEMO_CLASSROOM = {
+  courses: [{ id: 'c1', name: 'ENG101', section: 'Sec 2', creationTime: daysAgo(20) },
+    { id: 'c2', name: 'MATH102', section: 'Sec 1', creationTime: daysAgo(15) },
+    { id: 'c0', name: 'ม.6/3 ฟิสิกส์ (เก่า)', creationTime: daysAgo(400) }],
+  work: { c1: [{ id: 'd1', title: 'รายงานบทที่ 2', ...dueIn(-1) }], c2: [{ id: 'd2', title: 'แบบฝึกหัดที่ 4', ...dueIn(0) }],
+    c0: [{ id: 'old1', title: 'งานเก่าเทอมที่แล้ว 1' }, { id: 'old2', title: 'งานเก่าเทอมที่แล้ว 2' }] },
+};
+async function demoClassroom(url) {
+  const path = url.replace('https://classroom.googleapis.com/v1/', '');
+  const id = /^courses\/([^/]+)\//.exec(path)?.[1];
+  const body = path.startsWith('courses?') ? { courses: DEMO_CLASSROOM.courses }
+    : path.includes('studentSubmissions') ? {} : { courseWork: DEMO_CLASSROOM.work[id] || [] };
+  return { ok: true, status: 200, json: async () => body };
+}
+
 export function createStore({ failLoad = false, who = 'her' } = {}) {
-  let seq = 0;
+  let seq = 0, prefs = { picked: [], seen: [] };
   const id = () => 'demo-' + ++seq;
   const at = (days, h = 23, m = 59) => { const d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, m, 0, 0); return d.toISOString(); };
   const today = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD local
@@ -65,6 +83,10 @@ export function createStore({ failLoad = false, who = 'her' } = {}) {
     },
     async deleteTask(tid) { remove(tasks, tid); },
     async setHidden(ids, hidden) { for (const t of tasks) if (ids.includes(t.id)) t.hidden = hidden; },
+    async setCourseHidden(course, hidden) { for (const t of tasks) if (t.source === 'classroom' && t.course === course) t.hidden = hidden; },
+    async getClassroomPrefs() { return { ...prefs }; },
+    async saveClassroomPrefs(p) { prefs = { ...p }; },
+    classroomFetch: demoClassroom,
     async unhideAll() { for (const t of tasks) t.hidden = false; },
     async upsertClassroomTasks(rows) {
       for (const r of rows) {

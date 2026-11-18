@@ -55,3 +55,11 @@ test('toTaskRows: no due date -> null, untitled -> placeholder', () => {
   assert.equal(row.due_at, null);
   assert.equal(row.title, '(ไม่มีชื่องาน)');
 });
+
+test('fetchClassroom with a given course list skips listing and other courses', async () => {
+  const r = await fetchClassroom('tok', fakeFetch({
+    [work('1')]: [200, { courseWork: [{ id: 'w1', title: 'HW1' }] }],
+    [subs('1')]: [200, {}],
+  }), [{ id: '1', name: 'Only' }]);
+  assert.deepEqual(r.items.map(i => i.work.id), ['w1']);
+});

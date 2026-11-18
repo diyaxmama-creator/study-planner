@@ -49,6 +49,15 @@ export const MOOD_TEXT = {
   notes: 'ยังไม่มีโน้ตเลย',
 };
 
+// Open (not done) tasks per subject, subjects A-Z with "no subject" last; inside: by due date, undated last.
+export function groupByCourse(tasks) {
+  const map = new Map();
+  for (const t of tasks) if (!isDone(t)) map.set(t.course || '', [...(map.get(t.course || '') || []), t]);
+  const due = t => t.due_at ? time(t.due_at) : Infinity;
+  return [...map].sort(([a], [b]) => (a === '') - (b === '') || a.localeCompare(b, 'th'))
+    .map(([c, list]) => [c, list.sort((x, y) => due(x) - due(y))]);
+}
+
 export function openCount(groups) {
   return groups.overdue.length + groups.today.length + groups.tomorrow.length +
     groups.week.length + groups.later.length + groups.undated.length;
@@ -95,4 +104,21 @@ export function moodImageFor(mood, images) {
     if (images[m]) return { mood: m, ...images[m] };
   }
   return null;
+}
+
+// Universities rarely archive old Classroom courses, so old terms stay ACTIVE.
+// Default-tick only courses created recently; the student confirms in the picker.
+export function defaultPicked(course, now) {
+  return !!course.creationTime && now - new Date(course.creationTime) < 75 * 24 * 60 * 60 * 1000;
+}
+
+// Which course names to hide/unhide after the picker. prefs = { picked: [ids], seen: [ids] }.
+// Seen courses change only when their tick changes; unseen ones are hidden only if left unticked.
+export function courseHidingChanges(courses, prefs, picked) {
+  const out = [];
+  for (const c of courses) {
+    const now = picked.includes(c.id), seen = prefs.seen.includes(c.id), was = prefs.picked.includes(c.id);
+    if (seen ? now !== was : !now) out.push([c.name, !now]);
+  }
+  return out;
 }

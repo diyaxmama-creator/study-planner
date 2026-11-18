@@ -1,7 +1,7 @@
 process.env.TZ = 'Asia/Bangkok';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { moodFromFileName, classroomDue, groupTasks, pickMood, moodImageFor, MOOD_TEXT, MOODS, checkMoodFile, clickIsOutside } from '../js/logic.js';
+import { groupByCourse, defaultPicked, courseHidingChanges, moodFromFileName, classroomDue, groupTasks, pickMood, moodImageFor, MOOD_TEXT, MOODS, checkMoodFile, clickIsOutside } from '../js/logic.js';
 
 test('classroomDue is UTC', () => {
   assert.equal(classroomDue({year:2026,month:11,day:17},{hours:16,minutes:59}).toISOString(), '2026-11-17T16:59:00.000Z');
@@ -81,4 +81,25 @@ test('moodFromFileName maps upload-folder names to slots', () => {
   assert.equal(moodFromFileName('her-fighting-2.webp'), null);
   assert.equal(moodFromFileName('cat-sync.webp'), null);
   assert.equal(moodFromFileName('Joyful Hijabi Jump.png'), null);
+});
+
+test('defaultPicked ticks only recent courses', () => {
+  assert.equal(defaultPicked({ creationTime: '2026-10-20T00:00:00Z' }, now), true);
+  assert.equal(defaultPicked({ creationTime: '2025-06-01T00:00:00Z' }, now), false);
+  assert.equal(defaultPicked({}, now), false);
+});
+
+test('courseHidingChanges: hide unticked new courses, flip only changed seen ones', () => {
+  const courses = [{ id: 'a', name: 'A' }, { id: 'b', name: 'B' }, { id: 'c', name: 'C' }, { id: 'd', name: 'D' }];
+  const prefs = { seen: ['a', 'b'], picked: ['a'] };
+  // a stays ticked (no change), b newly ticked (unhide), c new + ticked (leave), d new + unticked (hide)
+  assert.deepEqual(courseHidingChanges(courses, prefs, ['a', 'b', 'c']), [['B', false], ['D', true]]);
+  assert.deepEqual(courseHidingChanges(courses, prefs, ['b', 'c', 'd']), [['A', true], ['B', false]]);
+});
+
+test('groupByCourse: subjects A-Z, no-subject last, due order, done left out', () => {
+  const g = groupByCourse([t('m2', '2026-11-20T00:00:00Z', { course: 'MATH' }), t('e', null, { course: 'ENG' }),
+    t('m1', '2026-11-18T00:00:00Z', { course: 'MATH' }), t('x', null, { course: '' }), t('mu', null, { course: 'MATH' }),
+    t('done', null, { course: 'ENG', done_manual: true })]);
+  assert.deepEqual(g.map(([c, l]) => [c, l.map(x => x.id)]), [['ENG', ['e']], ['MATH', ['m1', 'm2', 'mu']], ['', ['x']]]);
 });

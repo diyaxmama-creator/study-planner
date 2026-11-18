@@ -1,6 +1,6 @@
-import { groupTasks, isDone } from './logic.js';
+import { groupTasks, groupByCourse, isDone } from './logic.js';
 import { icon } from './pixel.js';
-import { $, el, state, store, attempt, render, views, hooks, openSheet, closeSheet, field, courseInput, pad, localDate, celebrate, toast } from './core.js';
+import { $, el, state, store, attempt, render, views, hooks, openSheet, closeSheet, field, courseInput, pad, localDate, celebrate, toast, safeStorage } from './core.js';
 
 const GROUPS = [['overdue', 'เลยกำหนด'], ['today', 'วันนี้'], ['tomorrow', 'พรุ่งนี้'], ['week', 'สัปดาห์นี้'], ['later', 'ภายหลัง'], ['undated', 'ยังไม่ระบุวันส่ง']];
 const fmtTime = d => d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
@@ -10,7 +10,8 @@ const fmtDue = (iso, group) => {
   return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }) + ' ' + fmtTime(d);
 };
 
-function taskCard(task, group) {
+function taskCard(task, group, bySubject = false) {
+  const late = bySubject && !isDone(task) && task.due_at && new Date(task.due_at) < new Date();
   const done = isDone(task);
   const byClassroom = done && !task.done_manual; // turned in on Classroom: can't untick here
   return el('div', { className: 'card' + (done ? ' done' : '') },
@@ -23,8 +24,9 @@ function taskCard(task, group) {
     el('div', { className: 'body' },
       el('button', { className: 'title', type: 'button', onclick: () => openTaskSheet(task) }, task.title),
       el('div', { className: 'meta' },
-        task.course && el('span', {}, task.course),
+        !bySubject && task.course && el('span', {}, task.course),
         task.due_at && el('span', { className: 'num' }, fmtDue(task.due_at, group)),
+        late && el('span', { className: 'tag late' }, 'เลยกำหนด'),
         task.source === 'classroom' && (task.classroom_link
           ? el('a', { className: 'tag', href: task.classroom_link, target: '_blank', rel: 'noopener' }, 'Classroom')
           : el('span', { className: 'tag' }, 'Classroom')),
@@ -33,13 +35,22 @@ function taskCard(task, group) {
       )));
 }
 
+const section = (title, list, card, late = false) => el('section', { className: 'group' },
+  el('h2', { className: 'group-title' + (late ? ' late' : '') },
+    icon('star', late ? '#B4455A' : '#F2A7B8'), title, el('span', { className: 'count' }, String(list.length))),
+  el('div', { className: 'panel' }, list.map(card)));
+
 function renderTasks() {
   const groups = groupTasks(state.tasks, new Date());
-  const sections = GROUPS.filter(([k]) => groups[k].length).map(([k, label]) => el('section', { className: 'group' },
-    el('h2', { className: 'group-title' + (k === 'overdue' ? ' late' : '') },
-      icon('star', k === 'overdue' ? '#B4455A' : '#F2A7B8'), label, el('span', { className: 'count' }, String(groups[k].length))),
-    el('div', { className: 'panel' }, groups[k].map(t => taskCard(t, k)))));
+  const bySubject = safeStorage.get('taskView') === 'subject';
+  const setView = v => { safeStorage.set('taskView', v); renderTasks(); };
+  const sections = bySubject
+    ? groupByCourse(state.tasks).map(([c, list]) => section(c || 'ไม่ระบุวิชา', list, t => taskCard(t, 'later', true)))
+    : GROUPS.filter(([k]) => groups[k].length).map(([k, label]) => section(label, groups[k], t => taskCard(t, k), k === 'overdue'));
   $('#view-tasks').replaceChildren(
+    el('div', { className: 'chips', role: 'group', 'aria-label': 'จัดกลุ่มงาน' },
+      el('button', { type: 'button', className: bySubject ? '' : 'on', 'aria-pressed': String(!bySubject), onclick: () => setView('date') }, 'ตามวันส่ง'),
+      el('button', { type: 'button', className: bySubject ? 'on' : '', 'aria-pressed': String(bySubject), onclick: () => setView('subject') }, 'ตามวิชา')),
     ...(sections.length ? sections : [el('p', { className: 'empty' }, 'ไม่มีงานค้าง เย้!', el('span', { className: 'muted' }, 'กด ＋ เพื่อจดงานใหม่'))]),
     groups.done.length ? el('details', { className: 'done-group group' },
       el('summary', { className: 'group-title' }, icon('check', '#6B5960'), 'เสร็จแล้ว', el('span', { className: 'count' }, String(groups.done.length))),
