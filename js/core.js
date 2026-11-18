@@ -7,7 +7,7 @@ import { SUPABASE_URL } from './config.js';
 const demoParam = new URLSearchParams(location.search).get('demo');
 export const demo = demoParam !== null;
 const { createStore } = await import(demo ? './store-demo.js' : './store-supabase.js');
-export const store = !demo && !SUPABASE_URL ? null : createStore({ failLoad: demoParam === 'fail' });
+export const store = !demo && !SUPABASE_URL ? null : createStore({ failLoad: demoParam === 'fail', who: demoParam === 'him' ? 'him' : 'her' });
 
 export const $ = s => document.querySelector(s);
 

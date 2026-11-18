@@ -2,11 +2,12 @@ import { MOODS } from './logic.js';
 import { $, el, state, store, attempt, render, views, toast, refreshImages } from './core.js';
 
 const LABELS = {
-  angry: ['โกรธ', 'มีงานเลยกำหนด'], fighting: ['สู้ ๆ', 'ใช้แทนถ้ายังไม่มีรูปโกรธ หรือตอนงานเยอะ'], waving: ['โบกมือ', 'มีงานค้าง ยังไม่เลยกำหนด'], allclear: ['ดีใจ (เคลียร์หมด)', 'ไม่มีงานค้างเลย'],
+  angry: ['โกรธ', 'มีงานเลยกำหนด'], fighting: ['สู้ ๆ', 'ใช้แทนถ้ายังไม่มีรูปโกรธ หรือตอนงานเยอะ'], waving: ['โบกมือ', 'มีงานค้าง ยังไม่เลยกำหนด'],
   studying: ['ตั้งใจทำงาน', 'มีงานส่งวันนี้'], cheering: ['ดีใจ', 'ตอนติ๊กงานเสร็จ'], sleepy: ['ง่วง', 'เปิดแอปหลัง 4 ทุ่ม'],
   morning: ['ตอนเช้า', 'เปิดแอปครั้งแรกของวัน'], books: ['งานเยอะ', 'งานค้าง 5 งานขึ้นไป'],
-  sync: ['กำลังดึงงาน', 'ตอนกดรีเฟรช'], notes: ['โน้ตว่าง', 'ยังไม่มีโน้ต'],
 };
+// allclear reuses the cheering picture; the cat covers syncing and empty notes, so those slots are hidden.
+const SLOTS = MOODS.filter(m => LABELS[m]);
 
 function thumb(img) {
   if (!img) return el('div', { className: 'noimg' }, 'ยังไม่มีรูป');
@@ -33,7 +34,7 @@ function renderSettings() {
     el('div', { className: 'intro' },
       el('h2', { className: 'group-title' }, 'รูปตัวละครตามอารมณ์'),
       el('p', { className: 'muted' }, 'รูปเก็บแบบส่วนตัว เห็นเฉพาะบัญชีนี้ ใช้ได้ทั้งรูปนิ่ง GIF และ MP4 (ไม่เกิน 15MB) ถ้ายังไม่มีรูปของอารมณ์ไหน แอปจะใช้รูปใกล้เคียงแทน')),
-    el('div', { className: 'panel' }, MOODS.map(m => el('div', { className: 'card mood-row' },
+    el('div', { className: 'panel' }, SLOTS.map(m => el('div', { className: 'card mood-row' },
       thumb(state.images[m]),
       el('div', { className: 'body' },
         el('b', {}, LABELS[m][0]),
