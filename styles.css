@@ -141,7 +141,7 @@ dialog#sheet fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .form-error:empty { display: none; }
 
 .toast-btn { margin-left: var(--s3); background: none; border: 0; padding: var(--s1) var(--s2); color: var(--acc); font-weight: 600; font-size: 14px; text-decoration: underline; }
-.toast { position: fixed; left: 50%; bottom: 148px; transform: translateX(-50%); background: var(--ink); color: var(--card); padding: var(--s3) var(--s4); font-size: 14px; z-index: 20; max-width: calc(100vw - 32px); box-shadow: var(--drop); }
+.toast { inset: auto; margin: 0; border: 0; position: fixed; left: 50%; bottom: 148px; transform: translateX(-50%); background: var(--ink); color: var(--card); padding: var(--s3) var(--s4); font-size: 14px; z-index: 20; max-width: calc(100vw - 32px); box-shadow: var(--drop); }
 
 /* ---------- notes ---------- */
 .search { display: block; width: calc(100% - 2 * var(--line)); min-height: 44px; margin: var(--s5) var(--line) 0; border: 0; box-shadow: var(--px2); padding: 0 var(--s3); background: var(--card); font-size: 16px; }

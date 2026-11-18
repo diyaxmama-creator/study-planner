@@ -35,11 +35,18 @@ export const state = {
   loadFailed: false, // never show "all clear" when we simply couldn't load
 };
 
+// A popover sits in the top layer, so messages stay visible above an open sheet (a modal dialog).
+function showToast(t, on) {
+  if (!t.showPopover) { t.hidden = !on; return; } // older browsers: plain element
+  t.hidden = false;
+  if (t.matches(':popover-open')) t.hidePopover();
+  if (on) t.showPopover();
+}
 export function toast(msg, action = null) {
   const t = $('#toast');
-  t.replaceChildren(msg, action ? el('button', { type: 'button', className: 'toast-btn', onclick: () => { t.hidden = true; action.run(); } }, action.label) : '');
-  t.hidden = false;
-  clearTimeout(toast.timer); toast.timer = setTimeout(() => { t.hidden = true; }, action ? 5000 : 3000);
+  t.replaceChildren(msg, action ? el('button', { type: 'button', className: 'toast-btn', onclick: () => { showToast(t, false); action.run(); } }, action.label) : '');
+  showToast(t, true);
+  clearTimeout(toast.timer); toast.timer = setTimeout(() => showToast(t, false), action ? 5000 : 3000);
 }
 export async function attempt(fn) {
   try { return await fn(); } catch (e) { toast(e.message || 'เกิดข้อผิดพลาด'); }
