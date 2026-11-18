@@ -51,7 +51,7 @@ main { padding: 0 var(--s4) 136px; }
 .pill { display: inline-flex; align-items: center; gap: var(--s2); background: var(--card); padding: 2px var(--s2); font-size: 13px; font-weight: 600; color: var(--late);
   box-shadow: 0 -2px 0 var(--late), 0 2px 0 var(--late), -2px 0 0 var(--late), 2px 0 0 var(--late); }
 .pic { width: 120px; flex: none; position: relative; display: flex; justify-content: center; }
-.pic img, .pic video { width: 120px; height: 200px; object-fit: cover; object-position: top; mix-blend-mode: multiply; margin-top: var(--s2); transform-origin: 50% 100%; }
+.pic img, .pic video { width: 120px; height: 200px; object-fit: cover; object-position: top; margin-top: var(--s2); transform-origin: 50% 100%; }
 
 .banner { margin: var(--s4) var(--s4) 0; background: var(--card); box-shadow: var(--px2); padding: var(--s3) var(--s4); font-size: 14px; line-height: 1.5; }
 
@@ -86,7 +86,7 @@ main { padding: 0 var(--s4) 136px; }
 .heart { position: absolute; bottom: 30px; color: var(--acc-ink); font-size: 18px; animation: float 3s ease-in infinite; }
 .heart:nth-child(2) { left: 20%; animation-delay: 1s; } .heart:nth-child(3) { left: 60%; animation-delay: 2s; } .heart:nth-child(4) { left: 80%; animation-delay: .5s; }
 .deco-cat, .empty-cat { transform-origin: 50% 100%; animation: breathe 3.2s ease-in-out infinite; }
-.empty-cat { width: 96px; mix-blend-mode: multiply; }
+.empty-cat { width: 96px; }
 @media (prefers-reduced-motion: reduce) { .pic img, .heart, .deco-cat, .empty-cat { animation: none !important; } .heart { display: none; } }
 
 /* ---------- sections: heading sits close to its own panel, far from the previous one ---------- */
@@ -162,7 +162,7 @@ dialog#sheet fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .intro { margin: var(--s5) 2px var(--s3); display: grid; gap: var(--s1); }
 .mood-row { align-items: center; }
 .mood-row .thumb, .mood-row .noimg { width: 52px; height: 52px; flex: none; background: var(--soft); }
-.mood-row .thumb { object-fit: cover; object-position: top; mix-blend-mode: multiply; }
+.mood-row .thumb { object-fit: cover; object-position: top; }
 .mood-row .noimg { display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--mute); text-align: center; line-height: 1.3; padding: var(--s1); }
 .mood-row b { font-weight: 600; font-size: 15px; }
 .file-btn { position: relative; overflow: hidden; }
@@ -176,5 +176,5 @@ dialog#sheet fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 /* ---------- the cat: decoration only (never a mood) ---------- */
 /* sits on the hero's floor, next to her picture; never covers content */
 .hero { position: relative; }
-.deco-cat { position: absolute; right: 108px; bottom: 0; width: 52px; height: auto; mix-blend-mode: multiply; pointer-events: none; }
-.login-cat { width: 120px; height: 150px; object-fit: cover; object-position: top; mix-blend-mode: multiply; justify-self: center; }
+.deco-cat { position: absolute; right: 108px; bottom: 0; width: 52px; height: auto; pointer-events: none; }
+.login-cat { width: 120px; height: 150px; object-fit: cover; object-position: top; justify-self: center; }
